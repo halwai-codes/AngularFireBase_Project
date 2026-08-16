@@ -1,0 +1,46 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h1>{{ title }}</h1>
+    </div>
+    <div class="navbar-menu">
+      <a routerLink="/tasks" class="nav-link">📋 Tasks</a>
+      <a routerLink="/profile" class="nav-link">👤 Profile</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="welcome-card">
+      <h2>Welcome, {{ currentUser?.displayName || currentUser?.email }}!</h2>
+      <p>You are successfully logged in.</p>
+      <div class="user-details">
+        <p><strong>Email:</strong> {{ currentUser?.email }}</p>
+        <p><strong>User ID:</strong> {{ currentUser?.uid }}</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card" routerLink="/tasks">
+        <h3>📋 Task Management</h3>
+        <p>Create, read, update, and delete tasks. Manage your workload efficiently.</p>
+      </div>
+      <div class="card" routerLink="/profile">
+        <h3>👤 My Profile</h3>
+        <p>View and edit your profile information and account settings.</p>
+      </div>
+      <div class="card">
+        <h3>📊 Analytics</h3>
+        <p>View your analytics and statistics here.</p>
+      </div>
+      <div class="card">
+        <h3>⚙️ Settings</h3>
+        <p>Manage your account settings and preferences.</p>
+      </div>
+      <div class="card">
+        <h3>📚 Resources</h3>
+        <p>Access documentation and help resources.</p>
+      </div>
+    </div>
+  </div>
+</div>
+

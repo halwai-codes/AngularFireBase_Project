@@ -1,0 +1,48 @@
+<div class="profile-container">
+  <div class="profile-card" *ngIf="currentUser">
+    <div class="profile-header">
+      <h2>My Profile</h2>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+
+    <div class="user-info">
+      <div class="info-item">
+        <span class="label">Email:</span>
+        <span class="value">{{ currentUser.email }}</span>
+      </div>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="displayName">Full Name</label>
+        <input
+          type="text"
+          id="displayName"
+          class="form-control"
+          formControlName="displayName"
+          [class.is-invalid]="submitted && f['displayName'].errors"
+        />
+        <div *ngIf="submitted && f['displayName'].errors" class="invalid-feedback">
+          <span *ngIf="f['displayName'].errors['required']">Full name is required</span>
+          <span *ngIf="f['displayName'].errors['minlength']">Name must be at least 2 characters</span>
+        </div>
+      </div>
+
+      <div *ngIf="message" class="alert alert-success">
+        {{ message }}
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Updating...' : 'Update Profile' }}
+      </button>
+    </form>
+  </div>
+</div>

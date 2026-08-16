@@ -1,0 +1,168 @@
+<div class="crud-container">
+  <div class="crud-header">
+    <h2>📋 Task Management</h2>
+    <button class="btn btn-primary" (click)="toggleForm()">
+      {{ showForm ? '✕ Close' : '+ New Task' }}
+    </button>
+  </div>
+
+  <!-- Form Section -->
+  <div *ngIf="showForm" class="form-section">
+    <h3>{{ editingId ? 'Edit Task' : 'Create New Task' }}</h3>
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="title">Task Title</label>
+          <input
+            type="text"
+            id="title"
+            class="form-control"
+            formControlName="title"
+            placeholder="Enter task title"
+            [class.is-invalid]="submitted && f['title'].errors"
+          />
+          <div *ngIf="submitted && f['title'].errors" class="invalid-feedback">
+            <span *ngIf="f['title'].errors['required']">Title is required</span>
+            <span *ngIf="f['title'].errors['minlength']">Title must be at least 3 characters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            class="form-control"
+            formControlName="description"
+            placeholder="Enter task description"
+            rows="3"
+            [class.is-invalid]="submitted && f['description'].errors"
+          ></textarea>
+          <div *ngIf="submitted && f['description'].errors" class="invalid-feedback">
+            <span *ngIf="f['description'].errors['required']">Description is required</span>
+            <span *ngIf="f['description'].errors['minlength']">Description must be at least 5 characters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dueDate">Due Date</label>
+          <input
+            type="date"
+            id="dueDate"
+            class="form-control"
+            formControlName="dueDate"
+            [class.is-invalid]="submitted && f['dueDate'].errors"
+          />
+          <div *ngIf="submitted && f['dueDate'].errors" class="invalid-feedback">
+            <span *ngIf="f['dueDate'].errors['required']">Due date is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority</label>
+          <select id="priority" class="form-control" formControlName="priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" class="form-control" formControlName="status">
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ editingId ? 'Update Task' : 'Create Task' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filter & Sort Section -->
+  <div class="controls-section">
+    <div class="filter-section">
+      <label for="filter">Filter by Status:</label>
+      <select id="filter" [(ngModel)]="filterStatus" class="form-control">
+        <option value="all">All ({{ getTaskCount('all') }})</option>
+        <option value="pending">Pending ({{ getTaskCount('pending') }})</option>
+        <option value="in-progress">In Progress ({{ getTaskCount('in-progress') }})</option>
+        <option value="completed">Completed ({{ getTaskCount('completed') }})</option>
+      </select>
+    </div>
+
+    <div class="sort-section">
+      <label for="sort">Sort by:</label>
+      <select id="sort" [(ngModel)]="sortBy" (change)="onSortChange()" class="form-control">
+        <option value="dueDate">Due Date</option>
+        <option value="priority">Priority</option>
+        <option value="createdAt">Created Date</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tasks List -->
+  <div class="tasks-section">
+    <div *ngIf="filteredTasks.length === 0" class="no-tasks">
+      <p>No tasks found. Create one to get started!</p>
+    </div>
+
+    <div *ngFor="let task of filteredTasks" class="task-card">
+      <div class="task-header">
+        <h3>{{ task.title }}</h3>
+        <div class="task-badges">
+          <span 
+            class="badge status-badge" 
+            [style.backgroundColor]="getStatusColor(task.status)"
+            (click)="updateStatus(task.id, task.status)"
+          >
+            {{ task.status | titlecase }}
+          </span>
+          <span 
+            class="badge priority-badge"
+            [style.backgroundColor]="getPriorityColor(task.priority)"
+          >
+            {{ task.priority | uppercase }}
+          </span>
+        </div>
+      </div>
+
+      <p class="task-description">{{ task.description }}</p>
+
+      <div class="task-meta">
+        <span class="meta-item">
+          <strong>📅 Due:</strong> {{ task.dueDate | date: 'MMM dd, yyyy' }}
+        </span>
+        <span class="meta-item">
+          <strong>⏱️ Created:</strong> {{ task.createdAt | date: 'MMM dd, yyyy' }}
+        </span>
+      </div>
+
+      <div class="task-actions">
+        <button class="btn btn-sm btn-edit" (click)="editTask(task)">✏️ Edit</button>
+        <button class="btn btn-sm btn-delete" (click)="deleteTask(task.id)">🗑️ Delete</button>
+        
+        <div class="status-dropdown">
+          <select 
+            class="status-select"
+            title="Change task status"
+            [value]="task.status"
+            (change)="updateStatus(task.id, $any($event.target).value)"
+          >
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
